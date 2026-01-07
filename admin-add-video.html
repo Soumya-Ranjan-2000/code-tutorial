@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add New Video</title>
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css">
+  <style>
+    .form-container {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .form-container h3 {
+      margin-bottom: 20px;
+      color: #343a40;
+    }
+    select.form-select {
+      background-color: #fff;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      padding: 8px;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.646 6.646a.5.5 0 0 1 .708 0L8 9.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1rem;
+    }
+  </style>
+</head>
+<body class="container-fluid">
+  <div class="form-container">
+    <h3><i class="bi bi-plus-circle"></i> Add New Video</h3>
+    <form>
+      <div class="mb-3">
+        <label for="VideoId" class="form-label">Video Id</label>
+        <input type="text" id="VideoId" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="Title" class="form-label">Title</label>
+        <input type="text" id="Title" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="Url" class="form-label">Video URL</label>
+        <input type="text" id="Url" class="form-control" placeholder="https://youtube.com/...">
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="Likes" class="form-label">Likes</label>
+          <input type="number" id="Likes" class="form-control">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="Views" class="form-label">Views</label>
+          <input type="number" id="Views" class="form-control">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="lstCategories" class="form-label">Select Category</label>
+        <select id="lstCategories" class="form-select">
+            <option>Java</option>
+            <option>Python</option>
+            <option>C</option>
+            <option>C++</option>
+        </select>
+      </div>
+      <div class="d-flex justify-content-between">
+        <button type="button" id="btnAddVideo" class="btn btn-primary">
+          <i class="bi bi-upload"></i> Add Video
+        </button>
+        <button type="button" id="btnCancel" class="btn btn-secondary">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- jQuery -->
+  <script src="../node_modules/jquery/dist/jquery.js"></script>
+  <script>
+    $(document).ready(function(){
+      // Cancel button: same behavior as in Edit form
+      $(document).on("click", "#btnCancel", function(){
+        // Load dashboard and videos again
+        $("section").html(""); 
+        $.ajax({
+          method: "get",
+          url: "admin-dashboard.html",
+          success: function(response){
+            $("section").html(response);
+            // After loading dashboard, reload videos
+            $.ajax({
+              method:"get",
+              url:"http://127.0.0.1:6600/getvideos",
+              success:(videos)=>{
+                $("tbody").empty();
+                videos.map(video=>{
+                  $(`<tr>
+                        <td>${video.Title}</td>
+                        <td><iframe src=${video.Url} width="200" height="100"></iframe></td>
+                        <td>
+                          <button id="btnEdit" name=${video.VideoId} class="btn btn-warning bi bi-pen-fill"></button>
+                          <button id="btnDelete" name=${video.VideoId} class="btn btn-danger bi bi-trash-fill"></button>
+                        </td>
+                      </tr>`).appendTo("tbody");
+                });
+              }
+            });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
